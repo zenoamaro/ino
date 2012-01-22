@@ -58,9 +58,9 @@ class Build(Command):
                 self.e['arduino_lib_version'] = v
                 print colorize("%s (%s)" % (v, v_string), 'green')
 
-        self.e.find_arduino_dir('arduino_core_dir', 
-                                ['hardware', 'arduino', 'cores', 'arduino'], 
-                                ['Arduino.h'] if self.e.arduino_lib_version.major else 'WProgram.h', 
+        self.e.find_arduino_dir('arduino_core_dir',
+                                ['hardware', 'arduino', 'cores', 'arduino'],
+                                ['Arduino.h'] if self.e.arduino_lib_version.major else 'WProgram.h',
                                 'Arduino core library')
 
         self.e.find_arduino_dir('arduino_libraries_dir', ['libraries'],
@@ -86,7 +86,7 @@ class Build(Command):
             if system_wide:
                 self.e.find_tool(tool_key, [tool_binary], human_name=tool_binary)
             else:
-                self.e.find_arduino_tool(tool_key, ['hardware', 'tools', 'avr', 'bin'], 
+                self.e.find_arduino_tool(tool_key, ['hardware', 'tools', 'avr', 'bin'],
                                          items=[tool_binary], human_name=tool_binary)
 
     def setup_flags(self, board_key):
@@ -97,7 +97,7 @@ class Build(Command):
             '-ffunction-sections',
             '-fdata-sections',
             '-g',
-            '-Os', 
+            '-Os',
             '-w',
             '-DF_CPU=' + board['build']['f_cpu'],
             '-DARDUINO=' + str(self.e.arduino_lib_version.as_int()),
@@ -105,7 +105,7 @@ class Build(Command):
         ])
 
         if self.e.arduino_lib_version.major:
-            variant_dir = os.path.join(self.e.arduino_variants_dir, 
+            variant_dir = os.path.join(self.e.arduino_variants_dir,
                                        board['build']['variant'])
             self.e.cflags.append('-I' + variant_dir)
 
@@ -173,9 +173,9 @@ class Build(Command):
         used_libs = set()
         with open(output_filepath) as f:
             for line in f:
-                match = local_re.search(line) or dist_re.search(line)
-                if match:
-                    used_libs.add(match.group('libdir'))
+                matches = local_re.findall(line) or dist_re.findall(line)
+                for match in matches:
+                    used_libs.add(match[0])
 
         return used_libs
 
