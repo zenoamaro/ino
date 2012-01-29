@@ -10,10 +10,16 @@
 {#
  #   *.c *.cpp -> dependencies file
  #}
-{{ output_filepath }} : {{ sketch_cpps.paths() + (src_dir|glob('*.c', '*.cpp')).paths() }}
+{% set sources = sketch_cpps.paths() + (src_dir|glob('*.c', '*.cpp')).paths() %}
+
+{{ output_filepath }} : {{ sources }}
 	@mkdir -p {{ output_filepath|dirname }}
 	@echo {{ ('Scanning dependencies of ' ~ src_dir|basename)|colorize('cyan') }}
+{% if sources %}
 	{{v}}{{ e.cc }} {{ e.cflags }} {{ inc_flags }} -MM $^ > $@;
+{% else %}
+	{{v}}touch $@;
+{% endif %}
 
 all: {{ output_filepath }}
 
